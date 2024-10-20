@@ -44,7 +44,7 @@ router.post('/createmovie', adminTokenHandler, async (req, res, next) => {
 })
 router.post('/addcelebtomovie', adminTokenHandler, async (req, res, next) => {
  try {
-     const { movieId, celebType, celebName, celebRole, celebImage } = req.body;
+     const { movieId, celebName, celebRole, celebImage } = req.body;
      const movie = await Movie.findById(movieId);
      if (!movie) {
          return res.status(404).json({
@@ -53,16 +53,10 @@ router.post('/addcelebtomovie', adminTokenHandler, async (req, res, next) => {
          });
      }
      const newCeleb = {
-         celebType,
          celebName,
          celebRole,
          celebImage
      };
-     if (celebType === "cast") {
-         movie.cast.push(newCeleb);
-     } else {
-         movie.crew.push(newCeleb);
-     }
      await movie.save();
 
      res.status(201).json({
@@ -226,6 +220,28 @@ router.get('/movies', async (req, res, next) => {
      next(err); // Pass any errors to the error handling middleware
  }
 })
+router.get('/movies/:id', async (req, res, next) => {
+ try {
+     const movieId = req.params.id;
+     const movie = await Movie.findById(movieId);
+     if (!movie) {
+         // If the movie is not found, return a 404 Not Found response
+         return res.status(404).json({
+             ok: false,
+             message: 'Movie not found'
+         });
+     }
+
+     res.status(200).json({
+         ok: true,
+         data: movie,
+         message: 'Movie retrieved successfully'
+     });
+ }
+ catch (err) {
+     next(err); // Pass any errors to the error handling middleware
+ }
+})
 router.get('/screensbycity/:city', async (req, res, next) => {
  const city = req.params.city.toLowerCase();
 
@@ -241,6 +257,8 @@ router.get('/screensbycity/:city', async (req, res, next) => {
      next(err); // Pass any errors to the error handling middleware
  }
 });
+
+
 router.use(errorHandler)
 
 module.exports = router;

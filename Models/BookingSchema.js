@@ -45,7 +45,20 @@ const bookingSchema = new mongoose.Schema({
  totalPrice: {
      type: Number,
      required: true
- }
+ },
+ paymentId: {
+  type: String,
+  required: true
+},
+paymentType: {
+  type: String,
+  required: true
+},
+userId: {
+ type: mongoose.Schema.Types.ObjectId,
+ ref: 'User', // Reference to the User model
+ required: true
+}
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
